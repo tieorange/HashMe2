@@ -25,21 +25,28 @@ import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.activity_main.fab
 import kotlinx.android.synthetic.main.content_main.image1
+import kotlinx.android.synthetic.main.content_main.image2
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation2
+import kotlinx.android.synthetic.main.content_main.seekBarTransformation4
+import kotlinx.android.synthetic.main.content_main.seekBarTransformation5
 import retrofit2.Call
 import us.technerd.tnimageview.TNImageView
+import java.util.Timer
+import java.util.TimerTask
 
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var bitmap1: Bitmap
     private lateinit var bitmap2: Bitmap
+    private lateinit var selectedImageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        bitmap2 = BitmapFactory.decodeResource(resources, drawable.ice_cream, getBitmapOptions())
+        selectedImageView = image1
+        bitmap1 = BitmapFactory.decodeResource(resources, drawable.ice_cream, getBitmapOptions())
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -48,23 +55,44 @@ class MainActivity : AppCompatActivity() {
 
         TNImageView().apply {
             makeRotatableScalable(image1)
-//            bringToFrontOnTouch(true)
+            makeRotatableScalable(image2)
+            bringToFrontOnTouch(true)
         }
 
         initSeekbars()
 
         InstaDownloader().getPicsByTag("sky") {
             Log.d("Tag", "")
-            loadImageToBitmapByUrl(it?.first()!!, image1)
+            startSlideShow(it)
         }
+    }
 
+    private fun startSlideShow(links: List<String?>?) {
+        var currentIndex = 0
+
+        Timer().scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                runOnUiThread {
+                    checkIndexIncrementation()
+                    loadImageToBitmapByUrl(links?.get(currentIndex++)!!, image1)
+
+                    checkIndexIncrementation()
+                    loadImageToBitmapByUrl(links[currentIndex++]!!, image2)
+                }
+            }
+
+            private fun checkIndexIncrementation() {
+                if (currentIndex >= links?.size ?: 0)
+                    currentIndex = 0
+            }
+        }, 0, 3000)
     }
 
     private fun loadImageToBitmapByUrl(url: String, imageView: ImageView) {
         Picasso.with(this@MainActivity).load(url).into(object : Target {
             override fun onBitmapLoaded(bitmapParam: Bitmap, from: LoadedFrom?) {
                 imageView.setImageBitmap(bitmapParam)
-                bitmap2 = bitmapParam
+                bitmap1 = bitmapParam
             }
 
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
@@ -107,10 +135,37 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
             }
         })
+
+
+        seekBarTransformation4.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                val skewX = (progress - skewDelta /*- 100*/) / 100.0f
+                skewImageView(image2, skewX, seekBarTransformation2.progress.toFloat())
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            }
+        })
+
+        seekBarTransformation5.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                val skewY = (progress - skewDelta /*- 100*/) / 100.0f
+                skewImageView(image2, seekBarTransformation.progress.toFloat(), skewY)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            }
+        })
     }
 
     private fun skewImageView(imageView: ImageView, xSkew: Float, ySkew: Float) {
-        imageView.setImageBitmap(skewBitmap(bitmap2, xSkew, ySkew))
+        imageView.setImageBitmap(skewBitmap(bitmap1, xSkew, ySkew))
     }
 
     private fun skewBitmap(src: Bitmap, xSkew: Float, ySkew: Float): Bitmap {
