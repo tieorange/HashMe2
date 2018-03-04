@@ -8,19 +8,26 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import com.slavicpower.hashme2.R.drawable
+import com.slavicpower.hashme2.data.ResponseInstaByTag
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.Picasso.LoadedFrom
+import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.activity_main.fab
 import kotlinx.android.synthetic.main.content_main.image1
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation2
+import retrofit2.Call
 import us.technerd.tnimageview.TNImageView
 
 
@@ -41,16 +48,35 @@ class MainActivity : AppCompatActivity() {
 
         TNImageView().apply {
             makeRotatableScalable(image1)
-            bringToFrontOnTouch(true)
+//            bringToFrontOnTouch(true)
         }
 
         initSeekbars()
 
-        loadFromInsta()
+        InstaDownloader().getPicsByTag("sky") {
+            Log.d("Tag", "")
+            loadImageToBitmapByUrl(it?.first()!!, image1)
+        }
+
+    }
+
+    private fun loadImageToBitmapByUrl(url: String, imageView: ImageView) {
+        Picasso.with(this@MainActivity).load(url).into(object : Target {
+            override fun onBitmapLoaded(bitmapParam: Bitmap, from: LoadedFrom?) {
+                imageView.setImageBitmap(bitmapParam)
+                bitmap2 = bitmapParam
+            }
+
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+            }
+
+            override fun onBitmapFailed(errorDrawable: Drawable?) {
+            }
+        })
     }
 
     private fun loadFromInsta() {
-        
+
     }
 
     private fun initSeekbars() {
@@ -157,5 +183,27 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
+    }
+}
+
+class InstaDownloader() {
+
+    fun getPicsByTag(tag: String, onFinished: (r: List<String?>?) -> Unit) {
+        MyApp.myApiService.getPicsByTag(tag).enqueue(object : retrofit2.Callback<ResponseInstaByTag> {
+
+            override fun onResponse(
+                    call: Call<ResponseInstaByTag>?,
+                    response: retrofit2.Response<ResponseInstaByTag>?
+            ) {
+                val linksList: List<String?>? = response?.body()?.data?.map {
+                    // IMPORTANT:
+                    it?.images?.lowResolution?.url
+                }
+                response?.body()?.let { onFinished(linksList) }
+            }
+
+            override fun onFailure(call: retrofit2.Call<ResponseInstaByTag>?, t: Throwable?) {
+            }
+        })
     }
 }
