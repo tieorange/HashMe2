@@ -112,8 +112,8 @@ class MainActivity : AppCompatActivity() {
 
         seekBarTransformation.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val skewX = (progress - skewDelta /*- 100*/) / 100.0f
-                skewImageView(image1, skewX, seekBarTransformation2.progress.toFloat())
+                val skewX = getProgressValue(progress, skewDelta)
+                skewImageView(image1, skewX, getProgressValue(seekBarTransformation2.progress, skewDelta))
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -125,8 +125,8 @@ class MainActivity : AppCompatActivity() {
 
         seekBarTransformation2.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val skewY = (progress - skewDelta /*- 100*/) / 100.0f
-                skewImageView(image1, seekBarTransformation.progress.toFloat(), skewY)
+                val skewY = getProgressValue(progress, skewDelta)
+                skewImageView(image1, getProgressValue(seekBarTransformation.progress, skewDelta), skewY)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -139,30 +139,26 @@ class MainActivity : AppCompatActivity() {
 
         seekBarTransformation4.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val skewX = (progress - skewDelta /*- 100*/) / 100.0f
-                skewImageView(image2, skewX, seekBarTransformation2.progress.toFloat())
+                val skewX = getProgressValue(progress, skewDelta)
+                skewImageView(image2, skewX, getProgressValue(seekBarTransformation5.progress, skewDelta))
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
         seekBarTransformation5.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val skewY = (progress - skewDelta /*- 100*/) / 100.0f
-                skewImageView(image2, seekBarTransformation.progress.toFloat(), skewY)
+                val skewY = getProgressValue(progress, skewDelta)
+                skewImageView(image2, getProgressValue(seekBarTransformation4.progress, skewDelta), skewY)
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
+
+    private fun getProgressValue(progress: Int, skewDelta: Int) = (progress - skewDelta /*- 100*/) / 100.0f
 
     private fun skewImageView(imageView: ImageView, xSkew: Float, ySkew: Float) {
         imageView.setImageBitmap(skewBitmap(bitmap1, xSkew, ySkew))
@@ -171,16 +167,7 @@ class MainActivity : AppCompatActivity() {
     private fun skewBitmap(src: Bitmap, xSkew: Float, ySkew: Float): Bitmap {
         val matrix = Matrix()
         matrix.postSkew(xSkew, ySkew)
-
-        return Bitmap.createBitmap(
-                src,
-                0,
-                0,
-                src.width,
-                src.height,
-                matrix,
-                true
-        )
+        return Bitmap.createBitmap(src, 0, 0, src.width, src.height, matrix, true)
     }
 
     private fun getBitmapOptions() = BitmapFactory.Options().apply {
