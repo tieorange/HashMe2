@@ -1,13 +1,13 @@
 package com.slavicpower.hashme2
 
 import android.graphics.Bitmap
+import android.graphics.Bitmap.Config
 import android.graphics.Bitmap.Config.ARGB_8888
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -26,39 +26,40 @@ import us.technerd.tnimageview.TNImageView
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var bitmap2: Bitmap
+    private lateinit var bitmap2: Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //        setSupportActionBar(toolbar)
 
-        bitmap2 = BitmapFactory.decodeResource(resources, drawable.trump)
+        bitmap2 = BitmapFactory.decodeResource(resources, drawable.ice_cream, getBitmapOptions())
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
         }
 
+        TNImageView().apply {
+            makeRotatableScalable(image1)
+            bringToFrontOnTouch(true)
+        }
 
-        // Initialize the TNImageView object
-        val tnImage = TNImageView()
+        initSeekbars()
 
-        // pass your ImageView which you want to make rotatable and scaleable
-        tnImage.makeRotatableScalable(image1)
+        loadFromInsta()
+    }
 
-        //you can also select if the touched view comes to front or not
-        tnImage.bringToFrontOnTouch(true)
+    private fun loadFromInsta() {
+        
+    }
 
-        val myDrawable = resources.getDrawable(R.drawable.trump)
-        (myDrawable as BitmapDrawable).bitmap
-
+    private fun initSeekbars() {
+        val skewDelta = 50
 
         seekBarTransformation.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val skewX = (progress - 100) / 100.0f
+                val skewX = (progress - skewDelta /*- 100*/) / 100.0f
                 skewImageView(image1, skewX, seekBarTransformation2.progress.toFloat())
-                //                deformImageView(progress.toFloat(), image1)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -70,8 +71,7 @@ class MainActivity : AppCompatActivity() {
 
         seekBarTransformation2.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                //                deformImageView(progress.toFloat(), image1)
-                val skewY = (progress - 100) / 100.0f
+                val skewY = (progress - skewDelta /*- 100*/) / 100.0f
                 skewImageView(image1, seekBarTransformation.progress.toFloat(), skewY)
             }
 
@@ -81,7 +81,6 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
             }
         })
-        //        deformImageView(200f, image1)
     }
 
     private fun skewImageView(imageView: ImageView, xSkew: Float, ySkew: Float) {
@@ -101,6 +100,12 @@ class MainActivity : AppCompatActivity() {
                 matrix,
                 true
         )
+    }
+
+    private fun getBitmapOptions() = BitmapFactory.Options().apply {
+        inJustDecodeBounds = false
+        inPreferredConfig = Config.RGB_565
+        inDither = true
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

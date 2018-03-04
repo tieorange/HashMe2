@@ -30,6 +30,7 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.github.AmeerHamzaaa:TNImageView-Android:0.1.2'
     implementation 'ja.burhanrashid52:photoeditor:0.1.0'
+    implementation 'com.github.florent37:android-slidr:1.0.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'

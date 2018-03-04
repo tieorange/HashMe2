@@ -10,10 +10,9 @@
 
     <ImageView
         android:id="@+id/image1"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_centerInParent="true"
-        android:src="@drawable/trump"/>
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/ice_cream"/>
 
     <SeekBar
         android:id="@+id/seekBarTransformation"
@@ -21,7 +20,7 @@
         android:layout_height="40dp"
         android:alpha="0.5"
         android:max="100"
-        android:min="0"/>
+        android:progress="50"/>
 
     <SeekBar
         android:id="@+id/seekBarTransformation2"
@@ -30,7 +29,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginTop="16dp"
         android:alpha="0.5"
-        android:max="100"
+        android:max="50"
         android:min="0"/>
 
 </RelativeLayout>
