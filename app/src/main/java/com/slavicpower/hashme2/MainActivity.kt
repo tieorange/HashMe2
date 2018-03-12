@@ -10,27 +10,23 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import com.slavicpower.hashme2.R.drawable
-import com.slavicpower.hashme2.data.ResponseInstaByTag
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Target
-import kotlinx.android.synthetic.main.activity_main.fab
 import kotlinx.android.synthetic.main.content_main.image1
 import kotlinx.android.synthetic.main.content_main.image2
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation2
+import kotlinx.android.synthetic.main.content_main.seekBarTransformation2Traperz
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation4
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation5
-import retrofit2.Call
 import us.technerd.tnimageview.TNImageView
 import java.util.Timer
 import java.util.TimerTask
@@ -47,24 +43,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         selectedImageView = image1
         bitmap1 = BitmapFactory.decodeResource(resources, drawable.ice_cream, getBitmapOptions())
-
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
+        bitmap2 = BitmapFactory.decodeResource(resources, drawable.ice_cream, getBitmapOptions())
 
         TNImageView().apply {
-            makeRotatableScalable(image1)
-            makeRotatableScalable(image2)
             bringToFrontOnTouch(true)
+            addListofImageViews(listOf(image1, image2))
         }
 
         initSeekbars()
 
-        InstaDownloader().getPicsByTag("sky") {
+        /*InstaDownloader().getPicsByTag("sky") {
             Log.d("Tag", "")
             startSlideShow(it)
-        }
+        }*/
     }
 
     private fun startSlideShow(links: List<String?>?) {
@@ -96,8 +87,8 @@ class MainActivity : AppCompatActivity() {
             override fun onBitmapLoaded(bitmapParam: Bitmap, from: LoadedFrom?) {
                 bitmap1 = skewBitmap(
                         bitmapParam,
-                        getProgressValue(seekBarTransformation.progress, skewDelta),
-                        getProgressValue(seekBarTransformation2.progress, skewDelta)
+                        getProgressValue(seekBarTransformation.progress),
+                        getProgressValue(seekBarTransformation2.progress)
                 )
                 imageView.setImageBitmap(bitmap1)
             }
@@ -118,8 +109,8 @@ class MainActivity : AppCompatActivity() {
             override fun onBitmapLoaded(bitmapParam: Bitmap, from: LoadedFrom?) {
                 bitmap2 = skewBitmap(
                         bitmapParam,
-                        getProgressValue(seekBarTransformation4.progress, skewDelta),
-                        getProgressValue(seekBarTransformation5.progress, skewDelta)
+                        getProgressValue(seekBarTransformation4.progress),
+                        getProgressValue(seekBarTransformation5.progress)
                 )
                 imageView.setImageBitmap(bitmap2)
             }
@@ -134,11 +125,10 @@ class MainActivity : AppCompatActivity() {
 
     val skewDelta = 50
     private fun initSeekbars() {
-
         seekBarTransformation.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val skewX = getProgressValue(progress, skewDelta)
-                skewImageView(image1, skewX, getProgressValue(seekBarTransformation2.progress, skewDelta), bitmap1)
+                val skewX = getProgressValue(progress)
+                skewImageView(image1, skewX, getProgressValue(seekBarTransformation2.progress), bitmap1)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -150,8 +140,8 @@ class MainActivity : AppCompatActivity() {
 
         seekBarTransformation2.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val skewY = getProgressValue(progress, skewDelta)
-                skewImageView(image1, getProgressValue(seekBarTransformation.progress, skewDelta), skewY, bitmap1)
+                val skewY = getProgressValue(progress)
+                skewImageView(image1, getProgressValue(seekBarTransformation.progress), skewY, bitmap1)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -161,11 +151,23 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        seekBarTransformation2Traperz.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                //                val skewY = getProgressValue(progress)
+                deformImageView(progress.toFloat(), image1, bitmap1)
+                //                skewImageView(image2, getProgressValue(seekBarTransformation4.progress), skewY, bitmap2)
+            }
 
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+
+        // 2nd:
         seekBarTransformation4.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val skewX = getProgressValue(progress, skewDelta)
-                skewImageView(image2, skewX, getProgressValue(seekBarTransformation5.progress, skewDelta), bitmap2)
+                val skewX = getProgressValue(progress)
+                skewImageView(image2, skewX, getProgressValue(seekBarTransformation5.progress), bitmap2)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -174,8 +176,8 @@ class MainActivity : AppCompatActivity() {
 
         seekBarTransformation5.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val skewY = getProgressValue(progress, skewDelta)
-                skewImageView(image2, getProgressValue(seekBarTransformation4.progress, skewDelta), skewY, bitmap2)
+                val skewY = getProgressValue(progress)
+                skewImageView(image2, getProgressValue(seekBarTransformation4.progress), skewY, bitmap2)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -183,7 +185,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun getProgressValue(progress: Int, skewDelta: Int) = (progress - skewDelta /*- 100*/) / 100.0f
+    private fun getProgressValue(progress: Int) = (progress - skewDelta) / 100.0f
 
     private fun skewImageView(
             imageView: ImageView,
@@ -202,7 +204,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getBitmapOptions() = BitmapFactory.Options().apply {
         inJustDecodeBounds = false
-        inPreferredConfig = Config.RGB_565
+        inPreferredConfig = Config.ARGB_8888
         inDither = true
     }
 
@@ -212,9 +214,14 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun deformImageView(deformParam: Float, imageView: ImageView) {
-        val bitmap2 = BitmapFactory.decodeResource(resources, drawable.trump)
-        val canvas2 = Canvas(bitmap2.copy(ARGB_8888, true))
+    fun deformImageView(
+            deformParam: Float,
+            imageView: ImageView,
+            bitmap: Bitmap
+    ) {
+        val bitmapCopy = bitmap.copy(ARGB_8888, true)
+
+        val canvas2 = Canvas(bitmapCopy)
         canvas2.drawColor(Color.WHITE)
         val rectPaint2 = Paint()
         rectPaint2.color = Color.GREEN
@@ -224,25 +231,31 @@ class MainActivity : AppCompatActivity() {
         val src2 = floatArrayOf(
                 0f,
                 0f,
-                bitmap2.width.toFloat(),
+                bitmap.width.toFloat(),
                 0f,
-                bitmap2.width.toFloat(),
-                bitmap2.height.toFloat(),
+                bitmap.width.toFloat(),
+                bitmap.height.toFloat(),
                 0f,
-                bitmap2.height.toFloat()
+                bitmap.height.toFloat()
         )
         val dst2 = floatArrayOf(
                 0f,
                 0f,
-                bitmap2.width - deform2,
+                bitmap.width - deform2,
                 deform2,
-                bitmap2.width - deform2,
-                bitmap2.height - deform2,
+                bitmap.width - deform2,
+                bitmap.height - deform2,
                 0f,
-                bitmap2.height.toFloat()
+                bitmap.height.toFloat()
         )
         matrix2.setPolyToPoly(src2, 0, dst2, 0, src2.size shr 1)
-        val bMatrix2 = Bitmap.createBitmap(bitmap2, 0, 0, bitmap2.width, bitmap2.height, matrix2, true)
+
+        matrix2.postSkew(
+                getProgressValue(seekBarTransformation.progress),
+                getProgressValue(seekBarTransformation2.progress)
+        )
+
+        val bMatrix2 = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix2, true)
 
         imageView.setImageBitmap(bMatrix2)
     }
@@ -255,27 +268,5 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
-    }
-}
-
-class InstaDownloader() {
-
-    fun getPicsByTag(tag: String, onFinished: (r: List<String?>?) -> Unit) {
-        MyApp.myApiService.getPicsByTag(tag).enqueue(object : retrofit2.Callback<ResponseInstaByTag> {
-
-            override fun onResponse(
-                    call: Call<ResponseInstaByTag>?,
-                    response: retrofit2.Response<ResponseInstaByTag>?
-            ) {
-                val linksList: List<String?>? = response?.body()?.data?.map {
-                    // IMPORTANT:
-                    it?.images?.lowResolution?.url
-                }
-                response?.body()?.let { onFinished(linksList) }
-            }
-
-            override fun onFailure(call: retrofit2.Call<ResponseInstaByTag>?, t: Throwable?) {
-            }
-        })
     }
 }

@@ -22,40 +22,73 @@
         android:clickable="true"
         android:src="@drawable/ice_cream"/>
 
-    <SeekBar
-        android:id="@+id/seekBarTransformation"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:alpha="0.5"
-        android:max="100"
-        android:progress="50"/>
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="200dp"
+        android:orientation="vertical">
 
-    <SeekBar
-        android:id="@+id/seekBarTransformation2"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="26dp"
-        android:alpha="0.5"
-        android:max="100"
-        android:progress="50"/>
+        <SeekBar
+            android:id="@+id/seekBarTransformation"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:alpha="0.5"
+            android:max="100"
+            android:progress="50"/>
 
-    <SeekBar
-        android:id="@+id/seekBarTransformation4"
+        <SeekBar
+            android:id="@+id/seekBarTransformation2"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="16dp"
+            android:alpha="0.5"
+            android:max="100"
+            android:progress="50"/>
+
+        <SeekBar
+            android:id="@+id/seekBarTransformation2Traperz"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="16dp"
+            android:alpha="0.5"
+            android:max="100"
+            android:progress="50"/>
+    </LinearLayout>
+
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:alpha="0.5"
-        android:max="100"
-        android:progress="50"/>
+        android:layout_marginLeft="200dp"
+        android:orientation="vertical">
 
-    <SeekBar
-        android:id="@+id/seekBarTransformation5"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="40dp"
-        android:alpha="0.5"
-        android:max="100"
-        android:progress="50"/>
+        <SeekBar
+            android:id="@+id/seekBarTransformation4"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:alpha="0.5"
+            android:max="100"
+            android:progress="50"/>
+
+        <SeekBar
+            android:id="@+id/seekBarTransformation5"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="40dp"
+            android:alpha="0.5"
+            android:max="100"
+            android:progress="50"/>
+
+        <SeekBar
+            android:id="@+id/seekBarTransformation5Trapez"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="40dp"
+            android:alpha="0.5"
+            android:max="100"
+            android:progress="50"/>
+    </LinearLayout>
+
 
 </RelativeLayout>
