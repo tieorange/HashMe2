@@ -20,13 +20,13 @@ import com.slavicpower.hashme2.R.drawable
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Target
-import kotlinx.android.synthetic.main.content_main.image1
 import kotlinx.android.synthetic.main.content_main.image2
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation2
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation2Traperz
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation4
 import kotlinx.android.synthetic.main.content_main.seekBarTransformation5
+import kotlinx.android.synthetic.main.content_main.slideShowImageView
 import us.technerd.tnimageview.TNImageView
 import java.util.Timer
 import java.util.TimerTask
@@ -35,19 +35,18 @@ import java.util.TimerTask
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bitmap1: Bitmap
-    private lateinit var bitmap2: Bitmap
     private lateinit var selectedImageView: ImageView
+    val skewDelta = 50
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        selectedImageView = image1
+        selectedImageView = slideShowImageView
         bitmap1 = BitmapFactory.decodeResource(resources, drawable.ice_cream, getBitmapOptions())
-        bitmap2 = BitmapFactory.decodeResource(resources, drawable.ice_cream, getBitmapOptions())
 
         TNImageView().apply {
+            makeRotatableScalable(slideShowImageView)
             bringToFrontOnTouch(true)
-            addListofImageViews(listOf(image1, image2))
         }
 
         initSeekbars()
@@ -65,10 +64,7 @@ class MainActivity : AppCompatActivity() {
             override fun run() {
                 runOnUiThread {
                     checkIndexIncrementation()
-                    loadImageToBitmapByUrl(links?.get(currentIndex++)!!, image1)
-
-                    checkIndexIncrementation()
-                    loadImageToBitmapByUrl2(links[currentIndex++]!!, image2)
+                    loadImageToBitmapByUrl(links?.get(currentIndex++)!!, slideShowImageView)
                 }
             }
 
@@ -101,34 +97,11 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun loadImageToBitmapByUrl2(
-            url: String,
-            imageView: ImageView
-    ) {
-        Picasso.with(this@MainActivity).load(url).into(object : Target {
-            override fun onBitmapLoaded(bitmapParam: Bitmap, from: LoadedFrom?) {
-                bitmap2 = skewBitmap(
-                        bitmapParam,
-                        getProgressValue(seekBarTransformation4.progress),
-                        getProgressValue(seekBarTransformation5.progress)
-                )
-                imageView.setImageBitmap(bitmap2)
-            }
-
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-            }
-
-            override fun onBitmapFailed(errorDrawable: Drawable?) {
-            }
-        })
-    }
-
-    val skewDelta = 50
     private fun initSeekbars() {
         seekBarTransformation.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 val skewX = getProgressValue(progress)
-                skewImageView(image1, skewX, getProgressValue(seekBarTransformation2.progress), bitmap1)
+                skewImageView(slideShowImageView, skewX, getProgressValue(seekBarTransformation2.progress), bitmap1)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -141,7 +114,7 @@ class MainActivity : AppCompatActivity() {
         seekBarTransformation2.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 val skewY = getProgressValue(progress)
-                skewImageView(image1, getProgressValue(seekBarTransformation.progress), skewY, bitmap1)
+                skewImageView(slideShowImageView, getProgressValue(seekBarTransformation.progress), skewY, bitmap1)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -154,7 +127,7 @@ class MainActivity : AppCompatActivity() {
         seekBarTransformation2Traperz.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 //                val skewY = getProgressValue(progress)
-                deformImageView(progress.toFloat(), image1, bitmap1)
+                deformImageView(progress.toFloat(), slideShowImageView, bitmap1)
                 //                skewImageView(image2, getProgressValue(seekBarTransformation4.progress), skewY, bitmap2)
             }
 
