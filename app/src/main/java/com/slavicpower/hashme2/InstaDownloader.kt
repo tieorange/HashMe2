@@ -1,26 +1,18 @@
 package com.slavicpower.hashme2
 
 import com.slavicpower.hashme2.data.ResponseInstaByTag
-import retrofit2.Call
+import retrofit2.Response
 
-class InstaDownloader() {
+class InstaDownloader {
 
-    fun getPicsByTag(tag: String, onFinished: (r: List<String?>?) -> Unit) {
-        MyApp.myApiService.getPicsByTag(tag).enqueue(object : retrofit2.Callback<ResponseInstaByTag> {
-
-            override fun onResponse(
-                    call: Call<ResponseInstaByTag>?,
-                    response: retrofit2.Response<ResponseInstaByTag>?
-            ) {
-                val linksList: List<String?>? = response?.body()?.data?.map {
-                    // IMPORTANT:
-                    it?.images?.standardResolution?.url
-                }
-                response?.body()?.let { onFinished(linksList) }
-            }
-
-            override fun onFailure(call: Call<ResponseInstaByTag>?, t: Throwable?) {
-            }
-        })
+    private fun onSuccess(
+            response: Response<ResponseInstaByTag>?,
+            onFinished: (r: List<String?>?) -> Unit
+    ) {
+        val linksList: List<String?>? = response?.body()?.data?.map {
+            // IMPORTANT:
+            it?.images?.standardResolution?.url
+        }
+        response?.body()?.let { onFinished(linksList) }
     }
 }
